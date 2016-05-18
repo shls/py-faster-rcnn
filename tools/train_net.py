@@ -20,50 +20,71 @@ import pprint
 import numpy as np
 import sys
 
+
 def parse_args():
     """
     Parse input arguments
     """
     parser = argparse.ArgumentParser(description='Train a Fast R-CNN network')
-    parser.add_argument('--gpu', dest='gpu_id',
-                        help='GPU device id to use [0]',
-                        default=0, type=int)
-    parser.add_argument('--solver', dest='solver',
-                        help='solver prototxt',
-                        default=None, type=str)
-    parser.add_argument('--iters', dest='max_iters',
-                        help='number of iterations to train',
-                        default=40000, type=int)
-    parser.add_argument('--weights', dest='pretrained_model',
-                        help='initialize with pretrained model weights',
-                        default=None, type=str)
-    parser.add_argument('--cfg', dest='cfg_file',
-                        help='optional config file',
-                        default=None, type=str)
-    parser.add_argument('--imdb', dest='imdb_name',
-                        help='dataset to train on',
-                        default='voc_2007_trainval', type=str)
-    parser.add_argument('--rand', dest='randomize',
-                        help='randomize (do not use a fixed seed)',
-                        action='store_true')
-    parser.add_argument('--set', dest='set_cfgs',
-                        help='set config keys', default=None,
-                        nargs=argparse.REMAINDER)
+    parser.add_argument(
+        '--gpu', dest='gpu_id',
+        help='GPU device id to use [0]',
+        default=0, type=int
+    )
+    parser.add_argument(
+        '--solver', dest='solver',
+        help='solver prototxt',
+        default=None, type=str
+    )
+    parser.add_argument(
+        '--iters', dest='max_iters',
+        help='number of iterations to train',
+        default=40000, type=int
+    )
+    parser.add_argument(
+        '--weights', dest='pretrained_model',
+        help='initialize with pretrained model weights',
+        default=None, type=str
+    )
+    parser.add_argument(
+        '--cfg', dest='cfg_file',
+        help='optional config file',
+        default=None, type=str
+    )
+    parser.add_argument(
+        '--imdb', dest='imdb_name',
+        help='dataset to train on',
+        default='voc_2007_trainval', type=str
+    )
+    parser.add_argument(
+        '--rand', dest='randomize',
+        help='randomize (do not use a fixed seed)',
+        action='store_true'
+    )
+    parser.add_argument(
+        '--set', dest='set_cfgs',
+        help='set config keys', default=None,
+        nargs=argparse.REMAINDER
+    )
 
     if len(sys.argv) == 1:
         parser.print_help()
         sys.exit(1)
 
     args = parser.parse_args()
+
     return args
 
+
 def combined_roidb(imdb_names):
+
     def get_roidb(imdb_name):
         imdb = get_imdb(imdb_name)
-        print 'Loaded dataset `{:s}` for training'.format(imdb.name)
+        print('Loaded dataset `{:s}` for training'.format(imdb.name))
         imdb.set_proposal_method(cfg.TRAIN.PROPOSAL_METHOD)
-        print 'Set proposal method: {:s}'.format(cfg.TRAIN.PROPOSAL_METHOD)
+        print('Set proposal method: {:s}'.format(cfg.TRAIN.PROPOSAL_METHOD))
         roidb = get_training_roidb(imdb)
+
         return roidb
 
     roidbs = [get_roidb(s) for s in imdb_names.split('+')]
@@ -74,6 +95,7 @@ def combined_roidb(imdb_names):
         imdb = datasets.imdb.imdb(imdb_names)
     else:
         imdb = get_imdb(imdb_names)
+
     return imdb, roidb
 
 if __name__ == '__main__':
@@ -102,11 +124,13 @@ if __name__ == '__main__':
     caffe.set_device(args.gpu_id)
 
     imdb, roidb = combined_roidb(args.imdb_name)
-    print '{:d} roidb entries'.format(len(roidb))
+    print('{:d} roidb entries'.format(len(roidb)))
 
     output_dir = get_output_dir(imdb)
-    print 'Output will be saved to `{:s}`'.format(output_dir)
+    print('Output will be saved to `{:s}`'.format(output_dir))
 
-    train_net(args.solver, roidb, output_dir,
-              pretrained_model=args.pretrained_model,
-              max_iters=args.max_iters)
+    train_net(
+        args.solver, roidb, output_dir,
+        pretrained_model=args.pretrained_model,
+        max_iters=args.max_iters
+    )

@@ -21,6 +21,7 @@ from pycocotools.coco import COCO
 from pycocotools.cocoeval import COCOeval
 from pycocotools import mask as COCOmask
 
+
 def _filter_crowd_proposals(roidb, crowd_thresh):
     """
     Finds proposals that are inside crowd regions and marks them with
@@ -31,8 +32,10 @@ def _filter_crowd_proposals(roidb, crowd_thresh):
         overlaps = entry['gt_overlaps'].toarray()
         crowd_inds = np.where(overlaps.max(axis=1) == -1)[0]
         non_gt_inds = np.where(entry['gt_classes'] == 0)[0]
+
         if len(crowd_inds) == 0 or len(non_gt_inds) == 0:
             continue
+
         iscrowd = [int(True) for _ in xrange(len(crowd_inds))]
         crowd_boxes = ds_utils.xyxy_to_xywh(entry['boxes'][crowd_inds, :])
         non_gt_boxes = ds_utils.xyxy_to_xywh(entry['boxes'][non_gt_inds, :])
@@ -40,17 +43,20 @@ def _filter_crowd_proposals(roidb, crowd_thresh):
         bad_inds = np.where(ious.max(axis=1) > crowd_thresh)[0]
         overlaps[non_gt_inds[bad_inds], :] = -1
         roidb[ix]['gt_overlaps'] = scipy.sparse.csr_matrix(overlaps)
+
     return roidb
 
+
 class coco(imdb):
+
     def __init__(self, image_set, year):
         imdb.__init__(self, 'coco_' + year + '_' + image_set)
         # COCO specific config options
-        self.config = {'top_k' : 2000,
-                       'use_salt' : True,
-                       'cleanup' : True,
-                       'crowd_thresh' : 0.7,
-                       'min_size' : 2}
+        self.config = {'top_k': 2000,
+                       'use_salt': True,
+                       'cleanup': True,
+                       'crowd_thresh': 0.7,
+                       'min_size': 2}
         # name, paths
         self._year = year
         self._image_set = image_set
@@ -71,20 +77,23 @@ class coco(imdb):
         # For example, minival2014 is a random 5000 image subset of val2014.
         # This mapping tells us where the view's images and proposals come from.
         self._view_map = {
-            'minival2014' : 'val2014',          # 5k val2014 subset
-            'valminusminival2014' : 'val2014',  # val2014 \setminus minival2014
+            'minival2014': 'val2014',          # 5k val2014 subset
+            'valminusminival2014': 'val2014',  # val2014 \setminus minival2014
         }
         coco_name = image_set + year  # e.g., "val2014"
         self._data_name = (self._view_map[coco_name]
-                           if self._view_map.has_key(coco_name)
+                           if coco_name in self._view_map
                            else coco_name)
+
         # Dataset splits that have ground-truth annotations (test splits
         # do not have gt annotations)
         self._gt_splits = ('train', 'val', 'minival')
 
     def _get_ann_file(self):
-        prefix = 'instances' if self._image_set.find('test') == -1 \
-                             else 'image_info'
+        prefix = 'instances'
+        if self._image_set.find('test') == -1:
+            prefix = 'image_info'
+
         return osp.join(self._data_path, 'annotations',
                         prefix + '_' + self._image_set + self._year + '.json')
 
@@ -98,6 +107,7 @@ class coco(imdb):
     def _get_widths(self):
         anns = self._COCO.loadImgs(self._image_index)
         widths = [ann['width'] for ann in anns]
+
         return widths
 
     def image_path_at(self, i):
@@ -116,8 +126,11 @@ class coco(imdb):
                      str(index).zfill(12) + '.jpg')
         image_path = osp.join(self._data_path, 'images',
                               self._data_name, file_name)
-        assert osp.exists(image_path), \
-                'Path does not exist: {}'.format(image_path)
+        assert(
+            osp.exists(image_path),
+            'Path does not exist: {}'.format(image_path)
+        )
+
         return image_path
 
     def selective_search_roidb(self):
@@ -141,21 +154,30 @@ class coco(imdb):
         if osp.exists(cache_file):
             with open(cache_file, 'rb') as fid:
                 roidb = cPickle.load(fid)
-            print '{:s} {:s} roidb loaded from {:s}'.format(self.name, method,
-                                                            cache_file)
+
+            print('{:s} {:s} roidb loaded from {:s}'.format(
+                    self.name,
+                    method,
+                    cache_file
+                )
+            )
+
             return roidb
 
         if self._image_set in self._gt_splits:
             gt_roidb = self.gt_roidb()
             method_roidb = self._load_proposals(method, gt_roidb)
             roidb = imdb.merge_roidbs(gt_roidb, method_roidb)
+
             # Make sure we don't use proposals that are contained in crowds
             roidb = _filter_crowd_proposals(roidb, self.config['crowd_thresh'])
         else:
             roidb = self._load_proposals(method, None)
         with open(cache_file, 'wb') as fid:
             cPickle.dump(roidb, fid, cPickle.HIGHEST_PROTOCOL)
-        print 'wrote {:s} roidb to {:s}'.format(method, cache_file)
+
+        print('wrote {:s} roidb to {:s}'.format(method, cache_file))
+
         return roidb
 
     def _load_proposals(self, method, gt_roidb):
@@ -175,12 +197,13 @@ class coco(imdb):
             'selective_search',
             'edge_boxes_AR',
             'edge_boxes_70']
-        assert method in valid_methods
+        assert(method in valid_methods)
 
-        print 'Loading {} boxes'.format(method)
+        print('Loading {} boxes'.format(method))
+
         for i, index in enumerate(self._image_index):
             if i % 1000 == 0:
-                print '{:d} / {:d}'.format(i + 1, len(self._image_index))
+                print('{:d} / {:d}'.format(i + 1, len(self._image_index)))
 
             box_file = osp.join(
                 cfg.DATA_DIR, 'coco_proposals', method, 'mat',
@@ -188,9 +211,11 @@ class coco(imdb):
 
             raw_data = sio.loadmat(box_file)['boxes']
             boxes = np.maximum(raw_data - 1, 0).astype(np.uint16)
+
             if method == 'MCG':
                 # Boxes from the MCG website are in (y1, x1, y2, x2) order
                 boxes = boxes[:, (1, 0, 3, 2)]
+
             # Remove duplicate boxes and very small boxes and then take top k
             keep = ds_utils.unique_boxes(boxes)
             boxes = boxes[keep, :]
@@ -203,6 +228,7 @@ class coco(imdb):
             width = im_ann['width']
             height = im_ann['height']
             ds_utils.validate_boxes(boxes, width=width, height=height)
+
         return self.create_roidb_from_box_list(box_list, gt_roidb)
 
     def gt_roidb(self):
@@ -214,7 +240,9 @@ class coco(imdb):
         if osp.exists(cache_file):
             with open(cache_file, 'rb') as fid:
                 roidb = cPickle.load(fid)
-            print '{} gt roidb loaded from {}'.format(self.name, cache_file)
+
+            print('{} gt roidb loaded from {}'.format(self.name, cache_file))
+
             return roidb
 
         gt_roidb = [self._load_coco_annotation(index)
@@ -222,7 +250,9 @@ class coco(imdb):
 
         with open(cache_file, 'wb') as fid:
             cPickle.dump(gt_roidb, fid, cPickle.HIGHEST_PROTOCOL)
-        print 'wrote gt roidb to {}'.format(cache_file)
+
+        print('wrote gt roidb to {}'.format(cache_file))
+
         return gt_roidb
 
     def _load_coco_annotation(self, index):
@@ -266,6 +296,7 @@ class coco(imdb):
             boxes[ix, :] = obj['clean_bbox']
             gt_classes[ix] = cls
             seg_areas[ix] = obj['area']
+
             if obj['iscrowd']:
                 # Set overlap to -1 for all classes for crowd objects
                 # so they will be excluded during training
@@ -275,27 +306,31 @@ class coco(imdb):
 
         ds_utils.validate_boxes(boxes, width=width, height=height)
         overlaps = scipy.sparse.csr_matrix(overlaps)
-        return {'boxes' : boxes,
+
+        return {'boxes': boxes,
                 'gt_classes': gt_classes,
-                'gt_overlaps' : overlaps,
-                'flipped' : False,
-                'seg_areas' : seg_areas}
+                'gt_overlaps': overlaps,
+                'flipped': False,
+                'seg_areas': seg_areas}
 
     def _get_box_file(self, index):
         # first 14 chars / first 22 chars / all chars + .mat
         # COCO_val2014_0/COCO_val2014_000000447/COCO_val2014_000000447991.mat
         file_name = ('COCO_' + self._data_name +
                      '_' + str(index).zfill(12) + '.mat')
+
         return osp.join(file_name[:14], file_name[:22], file_name)
 
     def _print_detection_eval_metrics(self, coco_eval):
         IoU_lo_thresh = 0.5
         IoU_hi_thresh = 0.95
+
         def _get_thr_ind(coco_eval, thr):
             ind = np.where((coco_eval.params.iouThrs > thr - 1e-5) &
                            (coco_eval.params.iouThrs < thr + 1e-5))[0][0]
             iou_thr = coco_eval.params.iouThrs[ind]
-            assert np.isclose(iou_thr, thr)
+            assert(np.isclose(iou_thr, thr))
+
             return ind
 
         ind_lo = _get_thr_ind(coco_eval, IoU_lo_thresh)
@@ -303,21 +338,28 @@ class coco(imdb):
         # precision has dims (iou, recall, cls, area range, max dets)
         # area range index 0: all area ranges
         # max dets index 2: 100 per image
-        precision = \
-            coco_eval.eval['precision'][ind_lo:(ind_hi + 1), :, :, 0, 2]
+        precision = coco_eval.eval['precision'][ind_lo:(ind_hi + 1), :, :, 0, 2]
         ap_default = np.mean(precision[precision > -1])
-        print ('~~~~ Mean and per-category AP @ IoU=[{:.2f},{:.2f}] '
-               '~~~~').format(IoU_lo_thresh, IoU_hi_thresh)
-        print '{:.1f}'.format(100 * ap_default)
+
+        print(('~~~~ Mean and per-category AP @ IoU=[{:.2f},{:.2f}] '
+               '~~~~').format(IoU_lo_thresh, IoU_hi_thresh))
+        print('{:.1f}'.format(100 * ap_default))
+
         for cls_ind, cls in enumerate(self.classes):
+
             if cls == '__background__':
                 continue
             # minus 1 because of __background__
-            precision = coco_eval.eval['precision'][ind_lo:(ind_hi + 1), :, cls_ind - 1, 0, 2]
-            ap = np.mean(precision[precision > -1])
-            print '{:.1f}'.format(100 * ap)
 
-        print '~~~~ Summary metrics ~~~~'
+            precision = coco_eval.eval['precision'][
+                ind_lo:(ind_hi + 1), :, cls_ind - 1, 0, 2
+            ]
+
+            ap = np.mean(precision[precision > -1])
+
+            print('{:.1f}'.format(100 * ap))
+
+        print('~~~~ Summary metrics ~~~~')
         coco_eval.summarize()
 
     def _do_detection_eval(self, res_file, output_dir):
@@ -329,9 +371,11 @@ class coco(imdb):
         coco_eval.accumulate()
         self._print_detection_eval_metrics(coco_eval)
         eval_file = osp.join(output_dir, 'detection_results.pkl')
+
         with open(eval_file, 'wb') as fid:
             cPickle.dump(coco_eval, fid, cPickle.HIGHEST_PROTOCOL)
-        print 'Wrote COCO eval results to: {}'.format(eval_file)
+
+        print('Wrote COCO eval results to: {}'.format(eval_file))
 
     def _coco_results_one_category(self, boxes, cat_id):
         results = []
@@ -345,10 +389,11 @@ class coco(imdb):
             ws = dets[:, 2] - xs + 1
             hs = dets[:, 3] - ys + 1
             results.extend(
-              [{'image_id' : index,
-                'category_id' : cat_id,
-                'bbox' : [xs[k], ys[k], ws[k], hs[k]],
-                'score' : scores[k]} for k in xrange(dets.shape[0])])
+              [{'image_id': index,
+                'category_id': cat_id,
+                'bbox': [xs[k], ys[k], ws[k], hs[k]],
+                'score': scores[k]} for k in xrange(dets.shape[0])])
+
         return results
 
     def _write_coco_results_file(self, all_boxes, res_file):
@@ -358,14 +403,21 @@ class coco(imdb):
         #   "score": 0.236}, ...]
         results = []
         for cls_ind, cls in enumerate(self.classes):
+
             if cls == '__background__':
                 continue
-            print 'Collecting {} results ({:d}/{:d})'.format(cls, cls_ind,
-                                                          self.num_classes - 1)
+
+            print('Collecting {} results ({:d}/{:d})'.format(
+                cls, cls_ind, self.num_classes - 1)
+            )
+
             coco_cat_id = self._class_to_coco_cat_id[cls]
-            results.extend(self._coco_results_one_category(all_boxes[cls_ind],
-                                                           coco_cat_id))
-        print 'Writing results json to {}'.format(res_file)
+            results.extend(self._coco_results_one_category(
+                all_boxes[cls_ind], coco_cat_id)
+            )
+
+        print('Writing results json to {}'.format(res_file))
+
         with open(res_file, 'w') as fid:
             json.dump(results, fid)
 
@@ -374,13 +426,17 @@ class coco(imdb):
                                          self._image_set +
                                          self._year +
                                          '_results'))
+
         if self.config['use_salt']:
             res_file += '_{}'.format(str(uuid.uuid4()))
+
         res_file += '.json'
         self._write_coco_results_file(all_boxes, res_file)
+
         # Only do evaluation on non-test sets
         if self._image_set.find('test') == -1:
             self._do_detection_eval(res_file, output_dir)
+
         # Optionally cleanup results json file
         if self.config['cleanup']:
             os.remove(res_file)

@@ -10,6 +10,7 @@
 import numpy as np
 import cv2
 
+
 def im_list_to_blob(ims):
     """Convert a list of images into a network input.
 
@@ -27,6 +28,7 @@ def im_list_to_blob(ims):
     channel_swap = (0, 3, 1, 2)
     blob = blob.transpose(channel_swap)
     return blob
+
 
 def prep_im_for_blob(im, pixel_means, target_size, max_size):
     """Mean subtract and scale an image for use in a blob."""

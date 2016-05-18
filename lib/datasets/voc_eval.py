@@ -9,6 +9,7 @@ import os
 import cPickle
 import numpy as np
 
+
 def parse_rec(filename):
     """ Parse a PASCAL VOC xml file """
     tree = ET.parse(filename)
@@ -27,6 +28,7 @@ def parse_rec(filename):
         objects.append(obj_struct)
 
     return objects
+
 
 def voc_ap(rec, prec, use_07_metric=False):
     """ ap = voc_ap(rec, prec, [use_07_metric])
@@ -59,7 +61,9 @@ def voc_ap(rec, prec, use_07_metric=False):
 
         # and sum (\Delta recall) * prec
         ap = np.sum((mrec[i + 1] - mrec[i]) * mpre[i + 1])
+
     return ap
+
 
 def voc_eval(detpath,
              annopath,
