@@ -4,8 +4,8 @@
 # Licensed under The MIT License [see LICENSE for details]
 # Written by Ross Girshick
 # --------------------------------------------------------
-
 import numpy as np
+
 
 def bbox_transform(ex_rois, gt_rois):
     ex_widths = ex_rois[:, 2] - ex_rois[:, 0] + 1.0
@@ -26,6 +26,7 @@ def bbox_transform(ex_rois, gt_rois):
     targets = np.vstack(
         (targets_dx, targets_dy, targets_dw, targets_dh)).transpose()
     return targets
+
 
 def bbox_transform_inv(boxes, deltas):
     if boxes.shape[0] == 0:
@@ -60,6 +61,7 @@ def bbox_transform_inv(boxes, deltas):
 
     return pred_boxes
 
+
 def clip_boxes(boxes, im_shape):
     """
     Clip boxes to image boundaries.
@@ -73,4 +75,5 @@ def clip_boxes(boxes, im_shape):
     boxes[:, 2::4] = np.maximum(np.minimum(boxes[:, 2::4], im_shape[1] - 1), 0)
     # y2 < im_shape[0]
     boxes[:, 3::4] = np.maximum(np.minimum(boxes[:, 3::4], im_shape[0] - 1), 0)
+
     return boxes

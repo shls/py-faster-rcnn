@@ -18,38 +18,55 @@ import cPickle
 import caffe
 import argparse
 import pprint
-import time, os, sys
+import time
+import os
+import sys
+
 
 def parse_args():
     """
     Parse input arguments
     """
     parser = argparse.ArgumentParser(description='Test a Fast R-CNN network')
-    parser.add_argument('--gpu', dest='gpu_id', help='GPU id to use',
-                        default=0, type=int)
-    parser.add_argument('--def', dest='prototxt',
-                        help='prototxt file defining the network',
-                        default=None, type=str)
-    parser.add_argument('--net', dest='caffemodel',
-                        help='model to test',
-                        default=None, type=str)
-    parser.add_argument('--cfg', dest='cfg_file',
-                        help='optional config file', default=None, type=str)
-    parser.add_argument('--wait', dest='wait',
-                        help='wait until net file exists',
-                        default=True, type=bool)
-    parser.add_argument('--imdb', dest='imdb_name',
-                        help='dataset to test',
-                        default='voc_2007_test', type=str)
-    parser.add_argument('--set', dest='set_cfgs',
-                        help='set config keys', default=None,
-                        nargs=argparse.REMAINDER)
+    parser.add_argument(
+        '--gpu', dest='gpu_id', help='GPU id to use',
+        default=0, type=int
+    )
+    parser.add_argument(
+        '--def', dest='prototxt',
+        help='prototxt file defining the network',
+        default=None, type=str
+    )
+    parser.add_argument(
+        '--net', dest='caffemodel',
+        help='model to test',
+        default=None, type=str
+    )
+    parser.add_argument(
+        '--cfg', dest='cfg_file',
+        help='optional config file', default=None, type=str)
+    parser.add_argument(
+        '--wait', dest='wait',
+        help='wait until net file exists',
+        default=True, type=bool
+    )
+    parser.add_argument(
+        '--imdb', dest='imdb_name',
+        help='dataset to test',
+        default='voc_2007_test', type=str
+    )
+    parser.add_argument(
+        '--set', dest='set_cfgs',
+        help='set config keys', default=None,
+        nargs=argparse.REMAINDER
+    )
 
     if len(sys.argv) == 1:
         parser.print_help()
         sys.exit(1)
 
     args = parser.parse_args()
+
     return args
 
 if __name__ == '__main__':
@@ -88,4 +105,4 @@ if __name__ == '__main__':
     rpn_file = os.path.join(output_dir, net.name + '_rpn_proposals.pkl')
     with open(rpn_file, 'wb') as f:
         cPickle.dump(imdb_boxes, f, cPickle.HIGHEST_PROTOCOL)
-    print 'Wrote RPN proposals to {}'.format(rpn_file)
+    print('Wrote RPN proposals to {}'.format(rpn_file))

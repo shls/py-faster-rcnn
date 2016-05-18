@@ -11,6 +11,7 @@ from utils.timer import Timer
 import numpy as np
 import cv2
 
+
 def _vis_proposals(im, dets, thresh=0.5):
     """Draw detected bounding boxes."""
     inds = np.where(dets[:, -1] >= thresh)[0]
@@ -36,16 +37,19 @@ def _vis_proposals(im, dets, thresh=0.5):
                 bbox=dict(facecolor='blue', alpha=0.5),
                 fontsize=14, color='white')
 
-    ax.set_title(('{} detections with '
-                  'p({} | box) >= {:.1f}').format(class_name, class_name,
-                                                  thresh),
-                  fontsize=14)
+    ax.set_title(
+        '{} detections with p({} | box) >= {:.1f}'.format(
+            class_name, class_name, thresh),
+        fontsize=14
+    )
     plt.axis('off')
     plt.tight_layout()
     plt.draw()
 
+
 def _get_image_blob(im):
-    """Converts an image into a network input.
+    """
+    Converts an image into a network input.
 
     Arguments:
         im (ndarray): a color image in BGR order
@@ -64,15 +68,19 @@ def _get_image_blob(im):
 
     processed_ims = []
 
-    assert len(cfg.TEST.SCALES) == 1
+    assert(len(cfg.TEST.SCALES) == 1)
     target_size = cfg.TEST.SCALES[0]
 
     im_scale = float(target_size) / float(im_size_min)
     # Prevent the biggest axis from being more than MAX_SIZE
     if np.round(im_scale * im_size_max) > cfg.TEST.MAX_SIZE:
         im_scale = float(cfg.TEST.MAX_SIZE) / float(im_size_max)
-    im = cv2.resize(im_orig, None, None, fx=im_scale, fy=im_scale,
-                    interpolation=cv2.INTER_LINEAR)
+
+    im = cv2.resize(
+        im_orig, None, None, fx=im_scale, fy=im_scale,
+        interpolation=cv2.INTER_LINEAR
+    )
+
     im_info = np.hstack((im.shape[:2], im_scale))[np.newaxis, :]
     processed_ims.append(im)
 
@@ -80,6 +88,7 @@ def _get_image_blob(im):
     blob = im_list_to_blob(processed_ims)
 
     return blob, im_info
+
 
 def im_proposals(net, im):
     """Generate RPN proposals on a single image."""
@@ -96,6 +105,7 @@ def im_proposals(net, im):
     scores = blobs_out['scores'].copy()
     return boxes, scores
 
+
 def imdb_proposals(net, imdb):
     """Generate RPN proposals on all images in an imdb."""
 
@@ -106,8 +116,11 @@ def imdb_proposals(net, imdb):
         _t.tic()
         imdb_boxes[i], scores = im_proposals(net, im)
         _t.toc()
-        print 'im_proposals: {:d}/{:d} {:.3f}s' \
-              .format(i + 1, imdb.num_images, _t.average_time)
+
+        print('im_proposals: {:d}/{:d} {:.3f}s'.format(
+                i + 1, imdb.num_images, _t.average_time
+            )
+        )
         if 0:
             dets = np.hstack((imdb_boxes[i], scores))
             # from IPython import embed; embed()

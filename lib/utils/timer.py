@@ -7,6 +7,7 @@
 
 import time
 
+
 class Timer(object):
     """A simple timer."""
     def __init__(self):
@@ -26,6 +27,7 @@ class Timer(object):
         self.total_time += self.diff
         self.calls += 1
         self.average_time = self.total_time / self.calls
+
         if average:
             return self.average_time
         else:

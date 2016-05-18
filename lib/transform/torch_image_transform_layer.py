@@ -24,6 +24,7 @@ import caffe
 from fast_rcnn.config import cfg
 import numpy as np
 
+
 class TorchImageTransformLayer(caffe.Layer):
     def setup(self, bottom, top):
         # (1, 3, 1, 1) shaped arrays

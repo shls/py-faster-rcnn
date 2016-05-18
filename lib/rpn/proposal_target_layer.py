@@ -15,6 +15,7 @@ from utils.cython_bbox import bbox_overlaps
 
 DEBUG = False
 
+
 class ProposalTargetLayer(caffe.Layer):
     """
     Assign object detection proposals to ground-truth targets. Produces proposal
@@ -52,8 +53,10 @@ class ProposalTargetLayer(caffe.Layer):
         )
 
         # Sanity check: single batch only
-        assert np.all(all_rois[:, 0] == 0), \
-                'Only single item batches are supported'
+        assert(
+            np.all(all_rois[:, 0] == 0),
+            'Only single item batches are supported'
+        )
 
         num_images = 1
         rois_per_image = cfg.TRAIN.BATCH_SIZE / num_images
@@ -66,14 +69,14 @@ class ProposalTargetLayer(caffe.Layer):
             rois_per_image, self._num_classes)
 
         if DEBUG:
-            print 'num fg: {}'.format((labels > 0).sum())
-            print 'num bg: {}'.format((labels == 0).sum())
+            print('num fg: {}'.format((labels > 0).sum()))
+            print('num bg: {}'.format((labels == 0).sum()))
             self._count += 1
             self._fg_num += (labels > 0).sum()
             self._bg_num += (labels == 0).sum()
-            print 'num fg avg: {}'.format(self._fg_num / self._count)
-            print 'num bg avg: {}'.format(self._bg_num / self._count)
-            print 'ratio: {:.3f}'.format(float(self._fg_num) / float(self._bg_num))
+            print('num fg avg: {}'.format(self._fg_num / self._count))
+            print('num bg avg: {}'.format(self._bg_num / self._count))
+            print('ratio: {:.3f}'.format(float(self._fg_num) / float(self._bg_num)))
 
         # sampled rois
         top[0].reshape(*rois.shape)
@@ -96,16 +99,21 @@ class ProposalTargetLayer(caffe.Layer):
         top[4].data[...] = np.array(bbox_inside_weights > 0).astype(np.float32)
 
     def backward(self, top, propagate_down, bottom):
-        """This layer does not propagate gradients."""
+        """
+        This layer does not propagate gradients.
+        """
         pass
 
     def reshape(self, bottom, top):
-        """Reshaping happens during the call to forward."""
+        """
+        Reshaping happens during the call to forward.
+        """
         pass
 
 
 def _get_bbox_regression_labels(bbox_target_data, num_classes):
-    """Bounding-box regression targets (bbox_target_data) are stored in a
+    """
+    Bounding-box regression targets (bbox_target_data) are stored in a
     compact form N x (class, tx, ty, tw, th)
 
     This function expands those targets into the 4-of-4*K representation used
@@ -126,32 +134,44 @@ def _get_bbox_regression_labels(bbox_target_data, num_classes):
         end = start + 4
         bbox_targets[ind, start:end] = bbox_target_data[ind, 1:]
         bbox_inside_weights[ind, start:end] = cfg.TRAIN.BBOX_INSIDE_WEIGHTS
+
     return bbox_targets, bbox_inside_weights
 
 
 def _compute_targets(ex_rois, gt_rois, labels):
-    """Compute bounding-box regression targets for an image."""
+    """
+    Compute bounding-box regression targets for an image.
+    """
 
-    assert ex_rois.shape[0] == gt_rois.shape[0]
-    assert ex_rois.shape[1] == 4
-    assert gt_rois.shape[1] == 4
+    assert(ex_rois.shape[0] == gt_rois.shape[0])
+    assert(ex_rois.shape[1] == 4)
+    assert(gt_rois.shape[1] == 4)
 
     targets = bbox_transform(ex_rois, gt_rois)
     if cfg.TRAIN.BBOX_NORMALIZE_TARGETS_PRECOMPUTED:
         # Optionally normalize targets by a precomputed mean and stdev
-        targets = ((targets - np.array(cfg.TRAIN.BBOX_NORMALIZE_MEANS))
-                / np.array(cfg.TRAIN.BBOX_NORMALIZE_STDS))
+        targets = (
+            (targets - np.array(cfg.TRAIN.BBOX_NORMALIZE_MEANS)) / np.array(
+                cfg.TRAIN.BBOX_NORMALIZE_STDS
+            )
+        )
+
     return np.hstack(
-            (labels[:, np.newaxis], targets)).astype(np.float32, copy=False)
+            (labels[:, np.newaxis], targets)
+        ).astype(np.float32, copy=False)
+
 
 def _sample_rois(all_rois, gt_boxes, fg_rois_per_image, rois_per_image, num_classes):
-    """Generate a random sample of RoIs comprising foreground and background
+    """
+    Generate a random sample of RoIs comprising foreground and background
     examples.
     """
     # overlaps: (rois x gt_boxes)
     overlaps = bbox_overlaps(
         np.ascontiguousarray(all_rois[:, 1:5], dtype=np.float),
-        np.ascontiguousarray(gt_boxes[:, :4], dtype=np.float))
+        np.ascontiguousarray(gt_boxes[:, :4], dtype=np.float)
+    )
+
     gt_assignment = overlaps.argmax(axis=1)
     max_overlaps = overlaps.max(axis=1)
     labels = gt_boxes[gt_assignment, 4]
@@ -163,7 +183,9 @@ def _sample_rois(all_rois, gt_boxes, fg_rois_per_image, rois_per_image, num_clas
     fg_rois_per_this_image = min(fg_rois_per_image, fg_inds.size)
     # Sample foreground regions without replacement
     if fg_inds.size > 0:
-        fg_inds = npr.choice(fg_inds, size=fg_rois_per_this_image, replace=False)
+        fg_inds = npr.choice(
+            fg_inds, size=fg_rois_per_this_image, replace=False
+        )
 
     # Select background RoIs as those within [BG_THRESH_LO, BG_THRESH_HI)
     bg_inds = np.where((max_overlaps < cfg.TRAIN.BG_THRESH_HI) &
@@ -172,9 +194,12 @@ def _sample_rois(all_rois, gt_boxes, fg_rois_per_image, rois_per_image, num_clas
     # against there being fewer than desired)
     bg_rois_per_this_image = rois_per_image - fg_rois_per_this_image
     bg_rois_per_this_image = min(bg_rois_per_this_image, bg_inds.size)
+
     # Sample background regions without replacement
     if bg_inds.size > 0:
-        bg_inds = npr.choice(bg_inds, size=bg_rois_per_this_image, replace=False)
+        bg_inds = npr.choice(
+            bg_inds, size=bg_rois_per_this_image, replace=False
+        )
 
     # The indices that we're selecting (both fg and bg)
     keep_inds = np.append(fg_inds, bg_inds)
