@@ -1,3 +1,12 @@
+# *Faster* R-CNN Fork
+
+#### Warning
+This Fork is still a work in progress 
+
+This fork :
+ - Merged the [caffe-fast-rcnn](https://github.com/rbgirshick/caffe-fast-rcnn/tree/0dcd397b29507b8314e252e850518c5695efbb83) fork to the current Caffe version. The [PR](https://github.com/BVLC/caffe/pull/4163) is waiting to be Merged
+ - Add support to Python 3.4
+
 ### Disclaimer
 
 The official Faster R-CNN code (written in MATLAB) is available [here](https://github.com/ShaoqingRen/faster_rcnn).
@@ -74,7 +83,7 @@ If you find Faster R-CNN useful in your research, please consider citing:
 1. Clone the Faster R-CNN repository
   ```Shell
   # Make sure to clone with --recursive
-  git clone --recursive https://github.com/rbgirshick/py-faster-rcnn.git
+  git clone --recursive https://github.com/Austriker/py-faster-rcnn.git
   ```
 
 2. We'll call the directory that you cloned Faster R-CNN into `FRCN_ROOT`
@@ -85,7 +94,7 @@ If you find Faster R-CNN useful in your research, please consider citing:
     ```Shell
     git submodule update --init --recursive
     ```
-    **Note 2:** The `caffe-fast-rcnn` submodule needs to be on the `faster-rcnn` branch (or equivalent detached state). This will happen automatically *if you followed step 1 instructions*.
+    **Note 2:** The `caffe` submodule needs to be on the `fast-rcnn` branch (or equivalent detached state). This will happen automatically *if you followed step 1 instructions*.
 
 3. Build the Cython modules
     ```Shell
@@ -95,7 +104,7 @@ If you find Faster R-CNN useful in your research, please consider citing:
 
 4. Build Caffe and pycaffe
     ```Shell
-    cd $FRCN_ROOT/caffe-fast-rcnn
+    cd $FRCN_ROOT/caffe
     # Now follow the Caffe installation instructions here:
     #   http://caffe.berkeleyvision.org/installation.html
 
