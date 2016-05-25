@@ -12,6 +12,7 @@ import numpy.random as npr
 import cv2
 from fast_rcnn.config import cfg
 from utils.blob import prep_im_for_blob, im_list_to_blob
+from six.moves import range
 
 
 def get_minibatch(roidb, num_classes):
@@ -23,12 +24,9 @@ def get_minibatch(roidb, num_classes):
         size=num_images
     )
 
-    assert(
-        cfg.TRAIN.BATCH_SIZE % num_images == 0,
-        'num_images ({}) must divide BATCH_SIZE ({})'.format(
+    assert (cfg.TRAIN.BATCH_SIZE % num_images == 0), 'num_images ({}) must divide BATCH_SIZE ({})'.format(
             num_images, cfg.TRAIN.BATCH_SIZE
         )
-    )
 
     rois_per_image = cfg.TRAIN.BATCH_SIZE / num_images
     fg_rois_per_image = np.round(cfg.TRAIN.FG_FRACTION * rois_per_image)
@@ -39,8 +37,9 @@ def get_minibatch(roidb, num_classes):
     blobs = {'data': im_blob}
 
     if cfg.TRAIN.HAS_RPN:
-        assert(len(im_scales) == 1,) "Single batch only"
-        assert(len(roidb) == 1,) "Single batch only"
+        assert len(im_scales) == 1, "Single batch only"
+        assert len(roidb) == 1, "Single batch only"
+
         # gt boxes: (x1, y1, x2, y2, cls)
         gt_inds = np.where(roidb[0]['gt_classes'] != 0)[0]
         gt_boxes = np.empty((len(gt_inds), 5), dtype=np.float32)
@@ -59,7 +58,7 @@ def get_minibatch(roidb, num_classes):
         bbox_inside_blob = np.zeros(bbox_targets_blob.shape, dtype=np.float32)
 
         # all_overlaps = []
-        for im_i in xrange(num_images):
+        for im_i in range(num_images):
             labels, overlaps, im_rois, bbox_targets, bbox_inside_weights \
                 = _sample_rois(roidb[im_i], fg_rois_per_image, rois_per_image,
                                num_classes)
@@ -149,7 +148,7 @@ def _get_image_blob(roidb, scale_inds):
     num_images = len(roidb)
     processed_ims = []
     im_scales = []
-    for i in xrange(num_images):
+    for i in range(num_images):
         im = cv2.imread(roidb[i]['image'])
         if roidb[i]['flipped']:
             im = im[:, ::-1, :]
@@ -204,7 +203,7 @@ def _vis_minibatch(im_blob, rois_blob, labels_blob, overlaps):
     Visualize a mini-batch for debugging.
     """
     import matplotlib.pyplot as plt
-    for i in xrange(rois_blob.shape[0]):
+    for i in range(rois_blob.shape[0]):
         rois = rois_blob[i, :]
         im_ind = rois[0]
         roi = rois[1:]

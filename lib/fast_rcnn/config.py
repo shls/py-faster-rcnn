@@ -234,7 +234,7 @@ def _merge_a_into_b(a, b):
     if type(a) is not edict:
         return
 
-    for k, v in a.iteritems():
+    for k, v in a.items():
         # a must specify keys that are in b
         if k not in b:
             raise KeyError('{} is not a valid config key'.format(k))
@@ -277,31 +277,30 @@ def cfg_from_list(cfg_list):
     """Set config keys via list (e.g., from command line)."""
     from ast import literal_eval
 
-    assert(len(cfg_list) % 2 == 0)
+    assert len(cfg_list) % 2 == 0
 
     for k, v in zip(cfg_list[0::2], cfg_list[1::2]):
         key_list = k.split('.')
         d = __C
 
         for subkey in key_list[:-1]:
-            assert(subkey in d)
+            assert subkey in d
 
             d = d[subkey]
 
         subkey = key_list[-1]
 
-        assert(subkey in d)
+        assert subkey in d
 
         try:
             value = literal_eval(v)
         except:
             # handle the case when v is a string literal
             value = v
-        assert(
-            type(value) == type(d[subkey]),
-            'type {} does not match original type {}'.format(
+
+        assert isinstance(value, type(d[subkey])), 'type {} does not match original type {}'.format(
                 type(value),
                 type(d[subkey])
             )
-        )
+
         d[subkey] = value

@@ -14,6 +14,7 @@ from fast_rcnn.config import cfg
 from fast_rcnn.bbox_transform import bbox_transform
 from utils.cython_bbox import bbox_overlaps
 import PIL
+from six.moves import range
 
 
 def prepare_roidb(imdb):
@@ -25,9 +26,9 @@ def prepare_roidb(imdb):
     recorded.
     """
     sizes = [PIL.Image.open(imdb.image_path_at(i)).size
-             for i in xrange(imdb.num_images)]
+             for i in range(imdb.num_images)]
     roidb = imdb.roidb
-    for i in xrange(len(imdb.image_index)):
+    for i in range(len(imdb.image_index)):
         roidb[i]['image'] = imdb.image_path_at(i)
         roidb[i]['width'] = sizes[i][0]
         roidb[i]['height'] = sizes[i][1]
@@ -42,23 +43,23 @@ def prepare_roidb(imdb):
         # sanity checks
         # max overlap of 0 => class should be zero (background)
         zero_inds = np.where(max_overlaps == 0)[0]
-        assert(all(max_classes[zero_inds] == 0))
+        assert all(max_classes[zero_inds] == 0)
         # max overlap > 0 => class should not be zero (must be a fg class)
         nonzero_inds = np.where(max_overlaps > 0)[0]
-        assert(all(max_classes[nonzero_inds] != 0))
+        assert all(max_classes[nonzero_inds] != 0)
 
 
 def add_bbox_regression_targets(roidb):
     """
     Add information needed to train bounding-box regressors.
     """
-    assert(len(roidb) > 0)
-    assert('max_classes' in roidb[0], 'Did you call prepare_roidb first?')
+    assert len(roidb) > 0
+    assert 'max_classes' in roidb[0], 'Did you call prepare_roidb first?'
 
     num_images = len(roidb)
     # Infer number of classes from the number of columns in gt_overlaps
     num_classes = roidb[0]['gt_overlaps'].shape[1]
-    for im_i in xrange(num_images):
+    for im_i in range(num_images):
         rois = roidb[im_i]['boxes']
         max_overlaps = roidb[im_i]['max_overlaps']
         max_classes = roidb[im_i]['max_classes']
@@ -80,9 +81,9 @@ def add_bbox_regression_targets(roidb):
         class_counts = np.zeros((num_classes, 1)) + cfg.EPS
         sums = np.zeros((num_classes, 4))
         squared_sums = np.zeros((num_classes, 4))
-        for im_i in xrange(num_images):
+        for im_i in range(num_images):
             targets = roidb[im_i]['bbox_targets']
-            for cls in xrange(1, num_classes):
+            for cls in range(1, num_classes):
                 cls_inds = np.where(targets[:, 0] == cls)[0]
                 if cls_inds.size > 0:
                     class_counts[cls] += cls_inds.size
@@ -102,9 +103,9 @@ def add_bbox_regression_targets(roidb):
     # Normalize targets
     if cfg.TRAIN.BBOX_NORMALIZE_TARGETS:
         print("Normalizing targets")
-        for im_i in xrange(num_images):
+        for im_i in range(num_images):
             targets = roidb[im_i]['bbox_targets']
-            for cls in xrange(1, num_classes):
+            for cls in range(1, num_classes):
                 cls_inds = np.where(targets[:, 0] == cls)[0]
                 roidb[im_i]['bbox_targets'][cls_inds, 1:] -= means[cls, :]
                 roidb[im_i]['bbox_targets'][cls_inds, 1:] /= stds[cls, :]

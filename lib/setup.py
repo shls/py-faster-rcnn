@@ -56,7 +56,7 @@ def locate_cuda():
         'lib64': pjoin(home, 'lib64')
     }
 
-    for k, v in cudaconfig.iteritems():
+    for k, v in cudaconfig.items():
         if not os.path.exists(v):
             raise EnvironmentError(
                     'The CUDA %s path could not be located in %s' % (k, v)
