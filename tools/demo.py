@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # --------------------------------------------------------
 # Faster R-CNN
@@ -18,6 +18,7 @@ from fast_rcnn.config import cfg
 from fast_rcnn.test import im_detect
 from fast_rcnn.nms_wrapper import nms
 from utils.timer import Timer
+from six.moves import range
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.io as sio
@@ -85,7 +86,9 @@ def vis_detections(im, class_name, dets, thresh=0.5):
 
 
 def demo(net, image_name):
-    """Detect object classes in an image using pre-computed object proposals."""
+    """
+    Detect object classes in an image using pre-computed object proposals.
+    """
 
     # Load the demo image
     im_file = os.path.join(cfg.DATA_DIR, 'demo', image_name)
@@ -166,7 +169,7 @@ if __name__ == '__main__':
 
     # Warmup on a dummy image
     im = 128 * np.ones((300, 500, 3), dtype=np.uint8)
-    for i in xrange(2):
+    for i in range(2):
         _, _ = im_detect(net, im)
 
     im_names = [

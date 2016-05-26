@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import _init_paths
 from fast_rcnn.config import cfg, cfg_from_file, cfg_from_list
@@ -64,7 +64,7 @@ if __name__ == '__main__':
 
     def recall_at(t):
         ind = np.where(thresholds > t - 1e-5)[0][0]
-        assert(np.isclose(thresholds[ind], t))
+        assert np.isclose(thresholds[ind], t)
 
         return recalls[ind]
 

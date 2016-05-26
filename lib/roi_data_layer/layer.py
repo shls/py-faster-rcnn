@@ -91,7 +91,7 @@ class RoIDataLayer(caffe.Layer):
         """Setup the RoIDataLayer."""
 
         # parse the layer parameter string, which must be valid YAML
-        layer_params = yaml.load(self.param_str_)
+        layer_params = yaml.load(self.param_str)
 
         self._num_classes = layer_params['num_classes']
 
@@ -148,13 +148,13 @@ class RoIDataLayer(caffe.Layer):
                 idx += 1
 
         print('RoiDataLayer: name_to_top:', self._name_to_top_map)
-        assert(len(top) == len(self._name_to_top_map))
+        assert len(top) == len(self._name_to_top_map)
 
     def forward(self, bottom, top):
         """Get blobs and copy them into this layer's top blob vector."""
         blobs = self._get_next_minibatch()
 
-        for blob_name, blob in blobs.iteritems():
+        for blob_name, blob in blobs.items():
             top_ind = self._name_to_top_map[blob_name]
             # Reshape net's input blobs
             top[top_ind].reshape(*(blob.shape))

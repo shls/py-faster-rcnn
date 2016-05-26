@@ -1,11 +1,20 @@
 # *Faster* R-CNN Fork
 
+ - This fork adds support to python 3.4
+ - Uses an up-to-date Caffe Version
+
+
 #### Warning
 This Fork is still a work in progress 
 
-This fork :
  - Merged the [caffe-fast-rcnn](https://github.com/rbgirshick/caffe-fast-rcnn/tree/0dcd397b29507b8314e252e850518c5695efbb83) fork to the current Caffe version. The [PR](https://github.com/BVLC/caffe/pull/4163) is waiting to be Merged
  - Add support to Python 3.4
+ - Not tested with Python 2.7
+
+##### To-Do
+ 
+ - Detect GPU arch in setup.py
+ - Test with python2.7
 
 ### Disclaimer
 
@@ -97,9 +106,31 @@ If you find Faster R-CNN useful in your research, please consider citing:
     **Note 2:** The `caffe` submodule needs to be on the `fast-rcnn` branch (or equivalent detached state). This will happen automatically *if you followed step 1 instructions*.
 
 3. Build the Cython modules
+
+    Install pip packages
+    ```sh
+    pip install -r requirements.txt
+
+    ```
+    
+    You have to check GPU arch default is sm_35
+
     ```Shell
     cd $FRCN_ROOT/lib
-    make
+
+    # For python 2
+    make python2
+
+    # For python 3
+    make python3
+    ```
+
+    If you want to rebuild :
+    ```sh
+    make clean
+
+    # Then
+    make python2/python3
     ```
 
 4. Build Caffe and pycaffe

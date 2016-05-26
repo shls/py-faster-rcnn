@@ -31,7 +31,7 @@ class SolverWrapper(object):
         if (cfg.TRAIN.HAS_RPN and cfg.TRAIN.BBOX_REG and cfg.TRAIN.BBOX_NORMALIZE_TARGETS):
             # RPN can only use precomputed normalization because there are no
             # fixed statistics to compute a priori
-            assert(cfg.TRAIN.BBOX_NORMALIZE_TARGETS_PRECOMPUTED)
+            assert cfg.TRAIN.BBOX_NORMALIZE_TARGETS_PRECOMPUTED
 
         if cfg.TRAIN.BBOX_REG:
             print('Computing bounding-box regression targets...')

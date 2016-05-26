@@ -23,7 +23,7 @@ class ProposalTargetLayer(caffe.Layer):
     """
 
     def setup(self, bottom, top):
-        layer_params = yaml.load(self.param_str_)
+        layer_params = yaml.load(self.param_str)
         self._num_classes = layer_params['num_classes']
 
         # sampled rois (0, x1, y1, x2, y2)
@@ -53,10 +53,7 @@ class ProposalTargetLayer(caffe.Layer):
         )
 
         # Sanity check: single batch only
-        assert(
-            np.all(all_rois[:, 0] == 0),
-            'Only single item batches are supported'
-        )
+        assert np.all(all_rois[:, 0] == 0), 'Only single item batches are supported'
 
         num_images = 1
         rois_per_image = cfg.TRAIN.BATCH_SIZE / num_images
@@ -143,9 +140,9 @@ def _compute_targets(ex_rois, gt_rois, labels):
     Compute bounding-box regression targets for an image.
     """
 
-    assert(ex_rois.shape[0] == gt_rois.shape[0])
-    assert(ex_rois.shape[1] == 4)
-    assert(gt_rois.shape[1] == 4)
+    assert ex_rois.shape[0] == gt_rois.shape[0]
+    assert ex_rois.shape[1] == 4
+    assert gt_rois.shape[1] == 4
 
     targets = bbox_transform(ex_rois, gt_rois)
     if cfg.TRAIN.BBOX_NORMALIZE_TARGETS_PRECOMPUTED:

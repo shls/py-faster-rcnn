@@ -10,6 +10,7 @@ from utils.blob import im_list_to_blob
 from utils.timer import Timer
 import numpy as np
 import cv2
+from six.moves import range
 
 
 def _vis_proposals(im, dets, thresh=0.5):
@@ -68,7 +69,7 @@ def _get_image_blob(im):
 
     processed_ims = []
 
-    assert(len(cfg.TEST.SCALES) == 1)
+    assert len(cfg.TEST.SCALES) == 1
     target_size = cfg.TEST.SCALES[0]
 
     im_scale = float(target_size) / float(im_size_min)
@@ -110,8 +111,8 @@ def imdb_proposals(net, imdb):
     """Generate RPN proposals on all images in an imdb."""
 
     _t = Timer()
-    imdb_boxes = [[] for _ in xrange(imdb.num_images)]
-    for i in xrange(imdb.num_images):
+    imdb_boxes = [[] for _ in range(imdb.num_images)]
+    for i in range(imdb.num_images):
         im = cv2.imread(imdb.image_path_at(i))
         _t.tic()
         imdb_boxes[i], scores = im_proposals(net, im)

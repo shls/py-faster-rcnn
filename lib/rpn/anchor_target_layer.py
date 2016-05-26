@@ -25,7 +25,7 @@ class AnchorTargetLayer(caffe.Layer):
     """
 
     def setup(self, bottom, top):
-        layer_params = yaml.load(self.param_str_)
+        layer_params = yaml.load(self.param_str)
         anchor_scales = layer_params.get('scales', (8, 16, 32))
         self._anchors = generate_anchors(scales=np.array(anchor_scales))
         self._num_anchors = self._anchors.shape[0]
@@ -75,10 +75,7 @@ class AnchorTargetLayer(caffe.Layer):
         # filter out-of-image anchors
         # measure GT overlap
 
-        assert(
-            bottom[0].data.shape[0] == 1,
-            'Only single item batches are supported'
-        )
+        assert bottom[0].data.shape[0] == 1, 'Only single item batches are supported'
 
         # map of shape (..., H, W)
         height, width = bottom[0].data.shape[-2:]
@@ -190,10 +187,9 @@ class AnchorTargetLayer(caffe.Layer):
             positive_weights = np.ones((1, 4)) * 1.0 / num_examples
             negative_weights = np.ones((1, 4)) * 1.0 / num_examples
         else:
-            assert(
-                (cfg.TRAIN.RPN_POSITIVE_WEIGHT > 0) &
-                (cfg.TRAIN.RPN_POSITIVE_WEIGHT < 1)
-            )
+            assert ((cfg.TRAIN.RPN_POSITIVE_WEIGHT > 0) &
+                    (cfg.TRAIN.RPN_POSITIVE_WEIGHT < 1))
+
             positive_weights = (
                 cfg.TRAIN.RPN_POSITIVE_WEIGHT / np.sum(labels == 1)
             )
@@ -254,8 +250,8 @@ class AnchorTargetLayer(caffe.Layer):
             (1, height, width, A * 4)
         ).transpose(0, 3, 1, 2)
 
-        assert(bbox_inside_weights.shape[2] == height)
-        assert(bbox_inside_weights.shape[3] == width)
+        assert bbox_inside_weights.shape[2] == height
+        assert bbox_inside_weights.shape[3] == width
         top[2].reshape(*bbox_inside_weights.shape)
         top[2].data[...] = bbox_inside_weights
 
@@ -264,8 +260,8 @@ class AnchorTargetLayer(caffe.Layer):
             (1, height, width, A * 4)
         ).transpose(0, 3, 1, 2)
 
-        assert(bbox_outside_weights.shape[2] == height)
-        assert(bbox_outside_weights.shape[3] == width)
+        assert bbox_outside_weights.shape[2] == height
+        assert bbox_outside_weights.shape[3] == width
         top[3].reshape(*bbox_outside_weights.shape)
         top[3].data[...] = bbox_outside_weights
 
@@ -303,9 +299,9 @@ def _compute_targets(ex_rois, gt_rois):
     Compute bounding-box regression targets for an image.
     """
 
-    assert(ex_rois.shape[0] == gt_rois.shape[0])
-    assert(ex_rois.shape[1] == 4)
-    assert(gt_rois.shape[1] == 5)
+    assert ex_rois.shape[0] == gt_rois.shape[0]
+    assert ex_rois.shape[1] == 4
+    assert gt_rois.shape[1] == 5
 
     return bbox_transform(
             ex_rois, gt_rois[:, :4]
