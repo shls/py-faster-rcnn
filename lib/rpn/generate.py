@@ -20,7 +20,7 @@ def _vis_proposals(im, dets, thresh=0.5):
     class_name = 'obj'
 	#im = im[:, :, (2, 1, 0)]
 	#Multi channels supported
-	channels = im.shape[2]
+    channels = im.shape[2]
 	channels_order =[0 for i in range(channels)]
 	if channels%3 == 0:
 		for i in range(0,channels):
