@@ -21,16 +21,16 @@ def _vis_proposals(im, dets, thresh=0.5):
 	#im = im[:, :, (2, 1, 0)]
 	#Multi channels supported
     channels = im.shape[2]
-	channels_order =[0 for i in range(channels)]
-	if channels%3 == 0:
-		for i in range(0,channels):
-			channels_order[i]=2 - i%3 + 3 * int(i/3)
-	else: 
-		head = int(channels/3) * 3
-		for i in range(0,head):
-			channels_order[i]=2 - i%3 + 3 * int(i/3)
-		for i in range(head, channels):
-			channels_order[i]=i+1
+    channels_order =[0 for i in range(channels)]
+    if channels%3 == 0:
+        for i in range(0,channels):
+            channels_order[i]=2 - i%3 + 3 * int(i/3)
+    else: 
+        head = int(channels/3) * 3
+        for i in range(0,head):
+            channels_order[i]=2 - i%3 + 3 * int(i/3)
+        for i in range(head, channels):
+            channels_order[i]=i+1
     im = im[:, :, tuple(channels_order)]
     fig, ax = plt.subplots(figsize=(12, 12))
     ax.imshow(im, aspect='equal')
