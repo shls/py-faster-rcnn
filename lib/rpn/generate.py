@@ -117,7 +117,7 @@ def imdb_proposals(net, imdb):
     for i in xrange(imdb.num_images):
         #im = cv2.imread(imdb.image_path_at(i))
 		#Multi channel supported
-		im = np.load(imdb.image_path_at(i))
+        im = np.load(imdb.image_path_at(i))
         _t.tic()
         imdb_boxes[i], scores = im_proposals(net, im)
         _t.toc()
