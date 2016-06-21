@@ -30,6 +30,12 @@ for year in ['2015']:
     for split in ['test', 'test-dev']:
         name = 'coco_{}_{}'.format(year, split)
         __sets[name] = (lambda split=split, year=year: coco(split, year))
+		
+from datasets.sdha import sdha
+sdha_devkit_path = '/extra/ls/sdha/rcnn'
+for split in ['train', 'val', 'test']:
+    name = '{}_{}'.format('sdha', split)
+    __sets[name] = (lambda split=split: inria(split, sdha_devkit_path))
 
 def get_imdb(name):
     """Get an imdb (image database) by name."""

@@ -17,7 +17,9 @@ def im_list_to_blob(ims):
     """
     max_shape = np.array([im.shape for im in ims]).max(axis=0)
     num_images = len(ims)
-    blob = np.zeros((num_images, max_shape[0], max_shape[1], 3),
+    #blob = np.zeros((num_images, max_shape[0], max_shape[1], 3),
+	#Multi channels supported
+	blob = np.zeros((num_images, max_shape[0], max_shape[1], ims[0].shape[2]),
                     dtype=np.float32)
     for i in xrange(num_images):
         im = ims[i]

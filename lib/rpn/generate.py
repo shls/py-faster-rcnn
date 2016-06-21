@@ -18,7 +18,20 @@ def _vis_proposals(im, dets, thresh=0.5):
         return
 
     class_name = 'obj'
-    im = im[:, :, (2, 1, 0)]
+	#im = im[:, :, (2, 1, 0)]
+	#Multi channels supported
+	channels = im.shape[2]
+	channels_order =[0 for i in range(channels)]
+	if channels%3 == 0:
+		for i in range(0,channels):
+			channels_order[i]=2 - i%3 + 3 * int(i/3)
+	else: 
+		head = int(channels/3) * 3
+		for i in range(0,head):
+			channels_order[i]=2 - i%3 + 3 * int(i/3)
+		for i in range(head, channels):
+			channels_order[i]=i+1
+    im = im[:, :, tuple(channels_order)]
     fig, ax = plt.subplots(figsize=(12, 12))
     ax.imshow(im, aspect='equal')
     for i in inds:
@@ -77,7 +90,7 @@ def _get_image_blob(im):
     processed_ims.append(im)
 
     # Create a blob to hold the input images
-    blob = im_list_to_blob(processed_ims)
+    blob = im_list_to_blob(processed_ims)	
 
     return blob, im_info
 
@@ -102,7 +115,9 @@ def imdb_proposals(net, imdb):
     _t = Timer()
     imdb_boxes = [[] for _ in xrange(imdb.num_images)]
     for i in xrange(imdb.num_images):
-        im = cv2.imread(imdb.image_path_at(i))
+        #im = cv2.imread(imdb.image_path_at(i))
+		#Multi channel supported
+		im = np.load(imdb.image_path_at(i))
         _t.tic()
         imdb_boxes[i], scores = im_proposals(net, im)
         _t.toc()
