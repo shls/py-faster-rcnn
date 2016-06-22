@@ -35,7 +35,7 @@ from datasets.sdha import sdha
 sdha_devkit_path = '/extra/ls/sdha/rcnn'
 for split in ['train', 'val', 'test']:
     name = '{}_{}'.format('sdha', split)
-    __sets[name] = (lambda split=split: inria(split, sdha_devkit_path))
+    __sets[name] = (lambda split=split: sdha(split, sdha_devkit_path))
 
 def get_imdb(name):
     """Get an imdb (image database) by name."""
