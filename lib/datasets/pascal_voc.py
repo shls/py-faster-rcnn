@@ -15,7 +15,7 @@ import utils.cython_bbox
 import six.moves.cPickle as pickle
 import subprocess
 import uuid
-from voc_eval import voc_eval
+from datasets.voc_eval import voc_eval
 from fast_rcnn.config import cfg
 from six.moves import range
 
