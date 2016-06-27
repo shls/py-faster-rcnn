@@ -393,10 +393,10 @@ layer {
   }
 }
 layer {
-  name: "cls_score"
+  name: "sdha_cls_score"
   type: "InnerProduct"
   bottom: "fc7"
-  top: "cls_score"
+  top: "sdha_cls_score"
   param {
     lr_mult: 1
     decay_mult: 1
@@ -418,10 +418,10 @@ layer {
   }
 }
 layer {
-  name: "bbox_pred"
+  name: "sdha_bbox_pred"
   type: "InnerProduct"
   bottom: "fc7"
-  top: "bbox_pred"
+  top: "sdha_bbox_pred"
   param {
     lr_mult: 1
     decay_mult: 1
@@ -443,8 +443,8 @@ layer {
   }
 }
 layer {
-  name: "cls_prob"
+  name: "sdha_cls_prob"
   type: "Softmax"
-  bottom: "cls_score"
-  top: "cls_prob"
+  bottom: "sdha_cls_score"
+  top: "sdha_cls_prob"
 }
