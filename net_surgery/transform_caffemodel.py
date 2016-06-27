@@ -19,7 +19,7 @@ fc_params_m = {pr: (net.params[pr][0].data, net.params[pr][1].data) for pr in pa
 fc_params_s = {pr: (net.params[pr][0].data, net.params[pr][1].data) for pr in params_s}
 
 # Load New net
-new_net = caffe.Net('/home/ls/py-faster-rcnn/net_surgery/sdha.prototxt', caffe.TRAIN)
+new_net = caffe.Net('/home/ls/py-faster-rcnn/net_surgery/sdha4.prototxt', caffe.TRAIN)
 new_params_m = ['conv1']
 new_params_s = ['conv2','conv3','conv4','conv5', 'rpn_conv/3x3', 'rpn_cls_score', 'rpn_bbox_pred', 'roi_pool5', 'fc6','fc7','cls_score', 'bbox_pred']
 
