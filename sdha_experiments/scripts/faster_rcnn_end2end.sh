@@ -43,7 +43,7 @@ echo Logging output to "$LOG"
 
 time ./tools/train_net.py --gpu ${GPU_ID} \
   --solver models/${PT_DIR}/${NET}/faster_rcnn_end2end/solver.prototxt \
-  --weights data/imagenet_models/${NET}.v2.sdha.brgb.caffemodel \
+  --weights data/imagenet_models/${NET}.v2.sdha.bgrb.caffemodel \
   --imdb ${TRAIN_IMDB} \
   --iters ${ITERS} \
   --cfg sdha_experiments/cfgs/faster_rcnn_end2end.yml \
