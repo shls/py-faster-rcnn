@@ -33,7 +33,7 @@ for year in ['2015']:
 		
 from datasets.sdha import sdha
 sdha_devkit_path = '/extra/ls/sdha/rcnn'
-for split in ['train', 'val', 'test']:
+for split in ['train', 'trainval', 'val', 'test']:
     name = '{}_{}'.format('sdha', split)
     __sets[name] = (lambda split=split: sdha(split, sdha_devkit_path))
 

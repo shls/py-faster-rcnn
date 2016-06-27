@@ -23,20 +23,11 @@ EXTRA_ARGS=${array[@]:3:$len}
 EXTRA_ARGS_SLUG=${EXTRA_ARGS// /_}
 
 case $DATASET in
-  pascal_voc)
-    TRAIN_IMDB="voc_2007_trainval"
-    TEST_IMDB="voc_2007_test"
-    PT_DIR="pascal_voc"
+  sdha)
+    TRAIN_IMDB="sdha_trainval"
+    TEST_IMDB="sdha_test"
+    PT_DIR="sdha"
     ITERS=70000
-    ;;
-  coco)
-    # This is a very long and slow training schedule
-    # You can probably use fewer iterations and reduce the
-    # time to the LR drop (set in the solver to 350,000 iterations).
-    TRAIN_IMDB="coco_2014_train"
-    TEST_IMDB="coco_2014_minival"
-    PT_DIR="coco"
-    ITERS=490000
     ;;
     
 
@@ -46,13 +37,13 @@ case $DATASET in
     ;;
 esac
 
-LOG="experiments/logs/faster_rcnn_end2end_${NET}_${EXTRA_ARGS_SLUG}.txt.`date +'%Y-%m-%d_%H-%M-%S'`"
+LOG="sdha_experiments/logs/faster_rcnn_end2end_${NET}_${EXTRA_ARGS_SLUG}.txt.`date +'%Y-%m-%d_%H-%M-%S'`"
 exec &> >(tee -a "$LOG")
 echo Logging output to "$LOG"
 
 time ./tools/train_net.py --gpu ${GPU_ID} \
   --solver models/${PT_DIR}/${NET}/faster_rcnn_end2end/solver.prototxt \
-  --weights data/imagenet_models/${NET}.v2.caffemodel \
+  --weights data/imagenet_models/${NET}.v2.sdha.caffemodel \
   --imdb ${TRAIN_IMDB} \
   --iters ${ITERS} \
   --cfg experiments/cfgs/faster_rcnn_end2end.yml \
