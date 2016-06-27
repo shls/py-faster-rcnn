@@ -43,10 +43,10 @@ echo Logging output to "$LOG"
 
 time ./tools/train_net.py --gpu ${GPU_ID} \
   --solver models/${PT_DIR}/${NET}/faster_rcnn_end2end/solver.prototxt \
-  --weights data/imagenet_models/${NET}.v2.sdha.caffemodel \
+  --weights data/imagenet_models/${NET}.v2.sdha.brgb.caffemodel \
   --imdb ${TRAIN_IMDB} \
   --iters ${ITERS} \
-  --cfg experiments/cfgs/faster_rcnn_end2end.yml \
+  --cfg sdha_experiments/cfgs/faster_rcnn_end2end.yml \
   ${EXTRA_ARGS}
 
 set +x
@@ -57,5 +57,5 @@ time ./tools/test_net.py --gpu ${GPU_ID} \
   --def models/${PT_DIR}/${NET}/faster_rcnn_end2end/test.prototxt \
   --net ${NET_FINAL} \
   --imdb ${TEST_IMDB} \
-  --cfg experiments/cfgs/faster_rcnn_end2end.yml \
+  --cfg sdha_experiments/cfgs/faster_rcnn_end2end.yml \
   ${EXTRA_ARGS}
