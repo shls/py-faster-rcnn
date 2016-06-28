@@ -443,8 +443,8 @@ layer {
   }
 }
 layer {
-  name: "sdha_cls_prob"
+  name: "cls_prob"
   type: "Softmax"
   bottom: "sdha_cls_score"
-  top: "sdha_cls_prob"
+  top: "cls_prob"
 }
