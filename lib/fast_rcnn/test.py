@@ -186,13 +186,17 @@ def im_detect(net, im, boxes=None):
 def vis_detections(im, class_name, dets, thresh=0.3):
     """Visual debugging of detections."""
     import matplotlib.pyplot as plt
-    im = im[:, :, (2, 1, 0)]
+    #im = im[:, :, (2, 1, 0)]
+    #Get first three channels as image to show
+    b,g,r,mhi = cv2.split(im)
+    im_show = cv2.merge([r,g,b])
     for i in xrange(np.minimum(10, dets.shape[0])):
         bbox = dets[i, :4]
         score = dets[i, -1]
         if score > thresh:
             plt.cla()
-            plt.imshow(im)
+            #plt.imshow(im)
+            plt.imshow(im_show)
             plt.gca().add_patch(
                 plt.Rectangle((bbox[0], bbox[1]),
                               bbox[2] - bbox[0],
