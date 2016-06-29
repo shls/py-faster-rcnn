@@ -13,4 +13,3 @@ TRAIN:
 TEST:
   HAS_RPN: True
   MAX_SIZE: 720
-  SCALES: (480,)
