@@ -32,7 +32,7 @@ for year in ['2015']:
         __sets[name] = (lambda split=split, year=year: coco(split, year))
 		
 from datasets.sdha import sdha
-sdha_devkit_path = '/extra/ls/sdha/rcnn'
+sdha_devkit_path = '/mnt/naruto/data_sets/sdha/rcnn'
 for split in ['train', 'trainval', 'val', 'test']:
     name = '{}_{}'.format('sdha', split)
     __sets[name] = (lambda split=split: sdha(split, sdha_devkit_path))
