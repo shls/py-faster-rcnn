@@ -16,7 +16,7 @@ import scipy.io as sio
 import utils.cython_bbox
 import cPickle
 import subprocess
-from sdha_eval.py import sdha_eval
+from sdha_eval import sdha_eval
 import uuid
 
 
