@@ -16,6 +16,9 @@ import scipy.io as sio
 import utils.cython_bbox
 import cPickle
 import subprocess
+from sdha_eval.py import sdha_eval
+import uuid
+
 
 class sdha(imdb):
     def __init__(self, image_set, devkit_path):
@@ -28,6 +31,8 @@ class sdha(imdb):
         self._class_to_ind = dict(zip(self.classes, xrange(self.num_classes)))
         self._image_ext = ['.npy']
         self._image_index = self._load_image_set_index()
+        self._salt = str(uuid.uuid4())
+        self._comp_id = 'comp4'
 
         # Specific config options
         self.config = {'cleanup'  : True,
@@ -121,6 +126,7 @@ class sdha(imdb):
             data = f.read()
         import re
         objs = re.findall('\d+ \d+ \d+ \d+ \d+', data)
+        
 
         num_objs = len(objs)
 
@@ -154,28 +160,83 @@ class sdha(imdb):
                 'flipped' : False,
                 'seg_areas' : seg_areas}
 
-    def _write_sdha_results_file(self, all_boxes):
-        use_salt = self.config['use_salt']
-        comp_id = 'comp4'
-        if use_salt:
-            comp_id += '-{}'.format(os.getpid())
+    def _get_comp_id(self):
+        comp_id = (self._comp_id + '_' + self._salt if self.config['use_salt']
+            else self._comp_id)
+        return comp_id
 
-        # VOCdevkit/results/comp4-44503_det_test_aeroplane.txt
-        path = os.path.join(self._devkit_path, 'results', self.name, comp_id + '_')
+    def _get_sdha_results_file_template(self):
+        # SDHAdevkit/results//<comp_id>_det_test_aeroplane.txt
+        filename = self._get_comp_id() + '_det_' + self._image_set + '_{:s}.txt'
+        path = os.path.join(
+            self._devkit_path,
+            'results',
+            filename)
+        return path
+
+    def _write_sdha_results_file(self, all_boxes):
         for cls_ind, cls in enumerate(self.classes):
             if cls == '__background__':
                 continue
-            print 'Writing {} results file'.format(cls)
-            filename = path + 'det_' + self._image_set + '_' + cls + '.txt'
+            print 'Writing {} SDHA results file'.format(cls)
+            filename = self._get_sdha_results_file_template().format(cls)
             with open(filename, 'wt') as f:
                 for im_ind, index in enumerate(self.image_index):
                     dets = all_boxes[cls_ind][im_ind]
                     if dets == []:
                         continue
-                    # the VOCdevkit expects 1-based indices
+                    # the SDHAdevkit expects 1-based indices
                     for k in xrange(dets.shape[0]):
                         f.write('{:s} {:.3f} {:.1f} {:.1f} {:.1f} {:.1f}\n'.
                                 format(index, dets[k, -1],
                                        dets[k, 0] + 1, dets[k, 1] + 1,
                                        dets[k, 2] + 1, dets[k, 3] + 1))
-        return comp_id
+
+    def _do_python_eval(self, output_dir = 'output'):
+        annopath = os.path.join(
+            self._data_path,
+            'Annotations',
+            self._image_set,
+            '{:s}.txt')
+        imagesetfile = os.path.join(
+            self._data_path,
+            'ImageSets',
+            self._image_set + '.txt')
+        cachedir = os.path.join(self._devkit_path, 'annotations_cache')
+        aps = []
+        if not os.path.isdir(output_dir):
+            os.mkdir(output_dir)
+        for i, cls in enumerate(self._classes):
+            if cls == '__background__':
+                continue
+            filename = self._get_sdha_results_file_template().format(cls)
+            rec, prec, ap = sdha_eval(
+                filename, annopath, imagesetfile, cls, cachedir, ovthresh=0.5)
+            aps += [ap]
+            print('AP for {} = {:.4f}'.format(cls, ap))
+            with open(os.path.join(output_dir, cls + '_pr.pkl'), 'w') as f:
+                cPickle.dump({'rec': rec, 'prec': prec, 'ap': ap}, f)
+        print('Mean AP = {:.4f}'.format(np.mean(aps)))
+        print('~~~~~~~~')
+        print('Results:')
+        for ap in aps:
+            print('{:.3f}'.format(ap))
+        print('{:.3f}'.format(np.mean(aps)))
+        print('~~~~~~~~')
+        print('')
+        print('--------------------------------------------------------------')
+        print('Results computed with the **unofficial** Python eval code.')
+        print('Results should be very close to the official MATLAB eval code.')
+        print('Recompute with `./tools/reval.py --matlab ...` for your paper.')
+        print('-- Thanks, The Management')
+        print('--------------------------------------------------------------')
+
+    def evaluate_detections(self, all_boxes, output_dir):
+        self._write_sdha_results_file(all_boxes)
+        self._do_python_eval(output_dir)
+        if self.config['cleanup']:
+            for cls in self._classes:
+                if cls == '__background__':
+                    continue
+                filename = self._get_sdha_results_file_template().format(cls)
+                os.remove(filename)
