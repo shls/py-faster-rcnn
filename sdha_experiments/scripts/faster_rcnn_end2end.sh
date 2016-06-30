@@ -27,7 +27,7 @@ case $DATASET in
     TRAIN_IMDB="sdha_trainval"
     TEST_IMDB="sdha_test"
     PT_DIR="sdha"
-    ITERS=70000
+    ITERS=150000
     ;;
     
 
