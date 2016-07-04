@@ -41,7 +41,7 @@ echo Logging output to "$LOG"
 
 time ./tools/train_faster_rcnn_alt_opt.py --gpu ${GPU_ID} \
   --net_name ${NET} \
-  --weights data/imagenet_models/${NET}.v2.caffemodel \
+  --weights data/imagenet_models/${NET}.v2.bgrb.caffemodel \
   --imdb ${TRAIN_IMDB} \
   --cfg sdha_experiments/cfgs/faster_rcnn_alt_opt.yml \
   ${EXTRA_ARGS}
