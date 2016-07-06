@@ -264,19 +264,19 @@ layer {
   top: "fc7"
 }
 layer {
-  name: "cls_score"
+  name: "sdha_cls_score"
   type: "InnerProduct"
   bottom: "fc7"
-  top: "cls_score"
+  top: "sdha_cls_score"
   inner_product_param {
     num_output: 7
   }
 }
 layer {
-  name: "bbox_pred"
+  name: "sdha_bbox_pred"
   type: "InnerProduct"
   bottom: "fc7"
-  top: "bbox_pred"
+  top: "sdha_bbox_pred"
   inner_product_param {
     num_output: 28
   }
@@ -284,6 +284,6 @@ layer {
 layer {
   name: "cls_prob"
   type: "Softmax"
-  bottom: "cls_score"
+  bottom: "sdha_cls_score"
   top: "cls_prob"
 }
