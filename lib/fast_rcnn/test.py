@@ -228,6 +228,20 @@ def apply_nms(all_boxes, thresh):
             nms_boxes[cls_ind][im_ind] = dets[keep, :].copy()
     return nms_boxes
 
+def draw_bbox(image_index, im, class_name, dets):
+    """Visual debugging by saving detection images."""
+    import matplotlib.pyplot as plt
+    b,g,r,mhi = cv2.split(im)
+    im_show = cv2.merge([r,g,b])
+    for i in xrange(np.minimum(10, dets.shape[0])):
+        bbox = dets[i, :4]
+        score = dets[i, -1]
+        cv2.rectangle(im_show,(bbox[0],bbox[1]),(bbox[2] - bbox[0], bbox[3] - bbox[1]),(0,255,0),2)
+        cv2.putText(im_show,'lable'+ class_name + str(score),(bbox[2]+10,bbox[3]),0,0.3,(0,255,0))
+        filename = "/home/ls/py-faster-rcnn/output/imgs/" + str(image_index) + "_" + class_name + "png"
+        cv2.imwrite(filename,im_show)
+
+
 def test_net(net, imdb, max_per_image=100, thresh=0.05, vis=False):
     """Test a Fast R-CNN network on an image database."""
     num_images = len(imdb.image_index)
@@ -274,6 +288,7 @@ def test_net(net, imdb, max_per_image=100, thresh=0.05, vis=False):
                 .astype(np.float32, copy=False)
             keep = nms(cls_dets, cfg.TEST.NMS)
             cls_dets = cls_dets[keep, :]
+            draw_bbox(i, im, imdb.classes[j], cls_dets)
             if vis:
                 vis_detections(im, imdb.classes[j], cls_dets)
             all_boxes[j][i] = cls_dets
