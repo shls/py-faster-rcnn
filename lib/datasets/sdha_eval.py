@@ -183,4 +183,5 @@ def sdha_eval(detpath,
     prec = tp / np.maximum(tp + fp, np.finfo(np.float64).eps)
     ap = sdha_ap(rec, prec)
 
+    os.remove(cachefile)
     return rec, prec, ap

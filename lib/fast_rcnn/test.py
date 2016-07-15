@@ -236,10 +236,11 @@ def draw_bbox(image_index, im, class_name, dets):
     for i in xrange(np.minimum(10, dets.shape[0])):
         bbox = dets[i, :4]
         score = dets[i, -1]
-        cv2.rectangle(im_show,(bbox[0],bbox[1]),(bbox[2] - bbox[0], bbox[3] - bbox[1]),(0,255,0),2)
-        cv2.putText(im_show,'lable'+ class_name + str(score),(bbox[2]+10,bbox[3]),0,0.3,(0,255,0))
-        filename = "/home/ls/py-faster-rcnn/output/imgs/" + str(image_index) + "_" + class_name + "png"
-        cv2.imwrite(filename,im_show)
+        if score > 0.3:
+            cv2.rectangle(im_show,(bbox[0],bbox[1]),(bbox[2], bbox[3]),(0,255,0),2)
+            cv2.putText(im_show,str(score),(bbox[0],bbox[3]),cv2.FONT_HERSHEY_SIMPLEX,0.3,(255,0,0))
+            filename = "/home/ls/py-faster-rcnn/output/imgs/" + str(image_index) + "_" + class_name + ".png"
+            cv2.imwrite(filename,im_show)
 
 
 def test_net(net, imdb, max_per_image=100, thresh=0.05, vis=False):
