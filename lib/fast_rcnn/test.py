@@ -232,7 +232,7 @@ def draw_bbox(image_index, im, class_name, dets):
     """Visual debugging by saving detection images."""
     import matplotlib.pyplot as plt
     b,g,r,mhi = cv2.split(im)
-    im_show = cv2.merge([r,g,b])
+    im_show = cv2.merge([b,g,r])
     for i in xrange(np.minimum(10, dets.shape[0])):
         bbox = dets[i, :4]
         score = dets[i, -1]
