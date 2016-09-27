@@ -188,8 +188,7 @@ def vis_detections(im, class_name, dets, thresh=0.3):
     import matplotlib.pyplot as plt
     #im = im[:, :, (2, 1, 0)]
     #Get first three channels as image to show
-    b,g,r,mhi = cv2.split(im)
-    im_show = cv2.merge([r,g,b])
+    im_show = im
     for i in xrange(np.minimum(10, dets.shape[0])):
         bbox = dets[i, :4]
         score = dets[i, -1]
@@ -231,8 +230,7 @@ def apply_nms(all_boxes, thresh):
 def draw_bbox(image_index, im, class_name, dets):
     """Visual debugging by saving detection images."""
     import matplotlib.pyplot as plt
-    b,g,r,mhi = cv2.split(im)
-    im_show = cv2.merge([b,g,r])
+    im_show = im
     for i in xrange(np.minimum(10, dets.shape[0])):
         bbox = dets[i, :4]
         score = dets[i, -1]

@@ -179,7 +179,7 @@ __C.DEDUP_BOXES = 1./16.
 # We use the same pixel mean for all networks even though it's not exactly what
 # they were trained with
 #__C.PIXEL_MEANS = np.array([[[102.9801, 115.9465, 122.7717]]])
-__C.PIXEL_MEANS = np.array([[[102.9801, 115.9465, 122.7717, 102.9801]]])
+__C.PIXEL_MEANS = np.array([[[113.8994]]])
 
 # For reproducibility
 __C.RNG_SEED = 3

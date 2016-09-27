@@ -25,7 +25,7 @@ class sdha(imdb):
         imdb.__init__(self, image_set)
         self._image_set = image_set
         self._devkit_path = devkit_path
-        self._data_path = os.path.join(self._devkit_path, 'data')
+        self._data_path = os.path.join(self._devkit_path, 'temporal')
         self._classes = ('__background__', # always index 0
                          'Hand Shaking', 'Hugging', 'Kicking', 'Pointing', 'Punching', 'Pushing')
         self._class_to_ind = dict(zip(self.classes, xrange(self.num_classes)))
@@ -57,7 +57,7 @@ class sdha(imdb):
         Construct an image path from the image's "index" identifier.
         """
         for ext in self._image_ext:
-            image_path = os.path.join(self._data_path, 'Images', 'mix', 'spatial-mhi2', self._image_set,
+            image_path = os.path.join(self._data_path, 'Images', 'mhi10', self._image_set,
                                   index + ext)
             if os.path.exists(image_path):
                 break
