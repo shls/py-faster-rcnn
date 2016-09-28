@@ -47,6 +47,8 @@ def _get_image_blob(im):
             im_scale = float(cfg.TEST.MAX_SIZE) / float(im_size_max)
         im = cv2.resize(im_orig, None, None, fx=im_scale, fy=im_scale,
                         interpolation=cv2.INTER_LINEAR)
+        if len(im.shape) !=3:
+            im = np.expand_dims(im, axis=2)
         im_scale_factors.append(im_scale)
         processed_ims.append(im)
 
