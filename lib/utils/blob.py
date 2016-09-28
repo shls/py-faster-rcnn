@@ -44,4 +44,7 @@ def prep_im_for_blob(im, pixel_means, target_size, max_size):
     im = cv2.resize(im, None, None, fx=im_scale, fy=im_scale,
                     interpolation=cv2.INTER_LINEAR)
 
+    if len(im.shape) !=3:
+        im = np.expand_dims(im, axis=2)
+
     return im, im_scale
