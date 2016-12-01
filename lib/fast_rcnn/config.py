@@ -22,6 +22,8 @@ import numpy as np
 # `pip install easydict` if you don't have it
 from easydict import EasyDict as edict
 
+from datasets.sdha_cfg import sdha_cfg
+
 __C = edict()
 # Consumers can get config by:
 #   from fast_rcnn_config import cfg
@@ -178,8 +180,16 @@ __C.DEDUP_BOXES = 1./16.
 # Pixel mean values (BGR order) as a (1, 1, 3) array
 # We use the same pixel mean for all networks even though it's not exactly what
 # they were trained with
-#__C.PIXEL_MEANS = np.array([[[102.9801, 115.9465, 122.7717]]])
-__C.PIXEL_MEANS = np.array([[[113.8994]]])
+__C.PIXEL_MEANS = np.array([[[102.9801, 115.9465, 122.7717]]])
+
+if sdha_cfg.spatial:
+    pass
+else if sdha_cfg.temporal:
+    __C.PIXEL_MEANS = np.array([[[113.8994]]])  
+else if sdha_cfg.two_stream:
+    __C.PIXEL_MEANS = np.array([[[113.8994,113.8994,113.8994]]])
+else:
+    pass
 
 # For reproducibility
 __C.RNG_SEED = 3

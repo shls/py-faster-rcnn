@@ -16,6 +16,7 @@ from roi_data_layer.minibatch import get_minibatch
 import numpy as np
 import yaml
 from multiprocessing import Process, Queue
+from datasets.sdha_cfg import sdha_cfg
 
 class RoIDataLayer(caffe.Layer):
     """Fast R-CNN data layer used for training."""
@@ -92,7 +93,7 @@ class RoIDataLayer(caffe.Layer):
 
         # data blob: holds a batch of N images, each with 1 channels
         idx = 0
-        top[idx].reshape(cfg.TRAIN.IMS_PER_BATCH, 1,
+        top[idx].reshape(cfg.TRAIN.IMS_PER_BATCH, sdha_cfg.channels,
             max(cfg.TRAIN.SCALES), cfg.TRAIN.MAX_SIZE)
         self._name_to_top_map['data'] = idx
         idx += 1

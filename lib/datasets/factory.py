@@ -12,6 +12,7 @@ __sets = {}
 from datasets.pascal_voc import pascal_voc
 from datasets.coco import coco
 import numpy as np
+from sdha_cfg import sdha_cfg
 
 # Set up voc_<year>_<split> using selective search "fast" mode
 for year in ['2007', '2012']:
@@ -32,7 +33,11 @@ for year in ['2015']:
         __sets[name] = (lambda split=split, year=year: coco(split, year))
 		
 from datasets.sdha import sdha
-sdha_devkit_path = '/extra/ls/sdha/rcnn'
+sdha_devkit_path = ''
+if sdha_cfg.GTX780:
+    sdha_devkit_path = sdha_cfg.GTX780_root
+if sdha_cfg.GTX980:
+    sdha_devkit_path = sdha_cfg.GTX980_root
 for split in ['train', 'trainval', 'val', 'test']:
     name = '{}_{}'.format('sdha', split)
     __sets[name] = (lambda split=split: sdha(split, sdha_devkit_path))
