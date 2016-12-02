@@ -16,6 +16,7 @@ GPU_ID=$1
 NET=$2
 NET_lc=${NET,,}
 DATASET=$3
+STREAM=$4
 
 array=( $@ )
 len=${#array[@]}
@@ -51,7 +52,7 @@ NET_FINAL=`grep "Final model:" ${LOG} | awk '{print $3}'`
 set -x
 
 time ./tools/test_net.py --gpu ${GPU_ID} \
-  --def models/${PT_DIR}/${NET}/faster_rcnn_alt_opt/faster_rcnn_test.pt \
+  --def models/${PT_DIR}/${NET}/${STREAM}/faster_rcnn_alt_opt/faster_rcnn_test.pt \
   --net ${NET_FINAL} \
   --imdb ${TEST_IMDB} \
   --cfg sdha_experiments/cfgs/faster_rcnn_alt_opt.yml \

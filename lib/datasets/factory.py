@@ -34,10 +34,12 @@ for year in ['2015']:
 		
 from datasets.sdha import sdha
 sdha_devkit_path = ''
-if sdha_cfg.GTX780:
+if sdha_cfg.device_name == 'GTX780':
     sdha_devkit_path = sdha_cfg.GTX780_root
-if sdha_cfg.GTX980:
+else if sdha_cfg.device_name == 'GTX980':
     sdha_devkit_path = sdha_cfg.GTX980_root
+else:
+    pass
 for split in ['train', 'trainval', 'val', 'test']:
     name = '{}_{}'.format('sdha', split)
     __sets[name] = (lambda split=split: sdha(split, sdha_devkit_path))

@@ -26,13 +26,15 @@ class sdha(imdb):
         imdb.__init__(self, image_set)
         self._image_set = image_set
         self._devkit_path = devkit_path
-        self._data_path = os.path.join(self._devkit_path, 'temporal')
+        self._data_path = os.path.join(self._devkit_path, sdha_cfg.stream_name)
         self._classes = ('__background__')
-        if sdha_cfg.two_category:
-            self._classes = ('__background__', 'potential_event')
-        if sdha_cfg.seven_category:
-            self._classes = ('__background__', # always index 0
-                            'Hand Shaking', 'Hugging', 'Kicking', 'Pointing', 'Punching', 'Pushing')
+
+        if sdha_cfg.category == 2:
+            self._classes = sdha_cfg.two_category
+        else if sdha_cfg.category == 7:
+            self._classes = sdha_cfg.seven_category
+        else:
+            pass
         self._class_to_ind = dict(zip(self.classes, xrange(self.num_classes)))
         self._image_ext = ['.npy']
         self._image_index = self._load_image_set_index()

@@ -18,6 +18,7 @@ from fast_rcnn.nms_wrapper import nms
 import cPickle
 from utils.blob import im_list_to_blob
 import os
+from datasets.sdha_cfg import sdha_cfg
 
 def _get_image_blob(im):
     """Converts an image into a network input.
@@ -188,15 +189,20 @@ def im_detect(net, im, boxes=None):
 def vis_detections(im, class_name, dets, thresh=0.3):
     """Visual debugging of detections."""
     import matplotlib.pyplot as plt
-    #im = im[:, :, (2, 1, 0)]
-    #Get first three channels as image to show
     im_show = im
+    if sdha_cfg.channels == 3:
+        im = im[:, :, (2, 1, 0)]
+        im_show = im
+    else if sdha_cfg.channels == 4:
+        b,g,r,mhi = cv2.split(im)
+        im_show = cv2.merge([r,g,b])
+    else:
+        pass
     for i in xrange(np.minimum(10, dets.shape[0])):
         bbox = dets[i, :4]
         score = dets[i, -1]
         if score > thresh:
             plt.cla()
-            #plt.imshow(im)
             plt.imshow(im_show)
             plt.gca().add_patch(
                 plt.Rectangle((bbox[0], bbox[1]),
@@ -233,6 +239,11 @@ def draw_bbox(image_index, im, class_name, dets):
     """Visual debugging by saving detection images."""
     import matplotlib.pyplot as plt
     im_show = im
+    if sdha_cfg.channels == 4:
+        b,g,r,mhi = cv2.split(im)
+        im_show = cv2.merge([b,g,r])
+    else:
+        pass
     for i in xrange(np.minimum(10, dets.shape[0])):
         bbox = dets[i, :4]
         score = dets[i, -1]

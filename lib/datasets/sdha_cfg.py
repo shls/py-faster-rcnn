@@ -28,15 +28,14 @@ __C = edict()
 #   from fast_rcnn_config import sdha_cfg
 sdha_cfg = __C
 
-__C.two_category = True
-__C.seven_category = False
-__C.temporal = True
-__C.spatial = False
-__C.two_stream = False
-__C.subdataset = 'mhi10'
-__C.ptroot = 'temporal'
+__C.category = 2
+__C.two_category = ('__background__', 'potential_event')
+__C.seven_category = ('__background__', 'Hand Shaking', 'Hugging', 'Kicking', 'Pointing', 'Punching', 'Pushing')
+
 __C.channels = 1
-__C.GTX780 = False
+__C.stream_name = 'temporal'
+__C.subdataset = 'mhi10'
+
+__C.device_name = 'GTX780'
 __C.GTX780_root = '/mnt/naruto/data_sets/sdha/rcnn'
-__C.GTX980 = True
 __C.GTX980_root = '/extra/ls/sdha/rcnn'
