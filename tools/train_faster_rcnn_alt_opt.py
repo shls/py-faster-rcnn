@@ -25,6 +25,7 @@ import sys, os
 import multiprocessing as mp
 import cPickle
 import shutil
+from datasets.sdha_cfg import sdha_cfg
 
 def parse_args():
     """
@@ -71,17 +72,17 @@ def get_solvers(net_name):
     # Faster R-CNN Alternating Optimization
     n = 'faster_rcnn_alt_opt'
     # Solver for each training stage
-    solvers = [[net_name, n, 'stage1_rpn_solver60k80k.pt'],
-               [net_name, n, 'stage1_fast_rcnn_solver30k40k.pt'],
-               [net_name, n, 'stage2_rpn_solver60k80k.pt'],
-               [net_name, n, 'stage2_fast_rcnn_solver30k40k.pt']]
-    solvers = [os.path.join(cfg.MODELS_DIR, *s) for s in solvers]
+    solvers = [[net_name, n, sdha_cfg.stream_name, 'stage1_rpn_solver60k80k.pt'],
+               [net_name, n, sdha_cfg.stream_name, 'stage1_fast_rcnn_solver30k40k.pt'],
+               [net_name, n, sdha_cfg.stream_name, 'stage2_rpn_solver60k80k.pt'],
+               [net_name, n, sdha_cfg.stream_name, 'stage2_fast_rcnn_solver30k40k.pt']]
+    solvers = [os.path.join(cfg.MODELS_DIR,  *s) for s in solvers]
     # Iterations for each training stage
     max_iters = [80000, 40000, 80000, 40000]
     # max_iters = [100, 100, 100, 100]
     # Test prototxt for the RPN
     rpn_test_prototxt = os.path.join(
-        cfg.MODELS_DIR, net_name, n, 'rpn_test.pt')
+        cfg.MODELS_DIR, net_name, n, sdha_cfg.stream_name, 'rpn_test.pt')
     return solvers, max_iters, rpn_test_prototxt
 
 # ------------------------------------------------------------------------------
