@@ -4,7 +4,7 @@
 # DATASET is only pascal_voc for now
 #
 # Example:
-# ./experiments/scripts/faster_rcnn_alt_opt.sh 0 VGG_CNN_M_1024 pascal_voc temporal \
+# ./experiments/scripts/faster_rcnn_alt_opt.sh 0 VGG_CNN_M_1024 pascal_voc temporal category\
 #   --set EXP_DIR foobar RNG_SEED 42 TRAIN.SCALES "[400, 500, 600, 700]"
 
 set -x
@@ -17,10 +17,11 @@ NET=$2
 NET_lc=${NET,,}
 DATASET=$3
 STREAM=$4
+CATE=$5
 
 array=( $@ )
 len=${#array[@]}
-EXTRA_ARGS=${array[@]:3:$len}
+EXTRA_ARGS=${array[@]:5:$len}
 EXTRA_ARGS_SLUG=${EXTRA_ARGS// /_}
 
 case $DATASET in
@@ -52,7 +53,7 @@ NET_FINAL=`grep "Final model:" ${LOG} | awk '{print $3}'`
 set -x
 
 time ./tools/test_net.py --gpu ${GPU_ID} \
-  --def models/${PT_DIR}/${NET}/${STREAM}/faster_rcnn_alt_opt/faster_rcnn_test.pt \
+  --def models/${PT_DIR}/${NET}/faster_rcnn_alt_opt/${STREAM}/${CATE}/faster_rcnn_test.pt \
   --net ${NET_FINAL} \
   --imdb ${TEST_IMDB} \
   --cfg sdha_experiments/cfgs/faster_rcnn_alt_opt.yml \

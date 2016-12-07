@@ -193,7 +193,7 @@ def vis_detections(im, class_name, dets, thresh=0.3):
     if sdha_cfg.channels == 3:
         im = im[:, :, (2, 1, 0)]
         im_show = im
-    else if sdha_cfg.channels == 4:
+    elif sdha_cfg.channels == 4:
         b,g,r,mhi = cv2.split(im)
         im_show = cv2.merge([r,g,b])
     else:

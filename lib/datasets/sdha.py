@@ -31,7 +31,7 @@ class sdha(imdb):
 
         if sdha_cfg.category == 2:
             self._classes = sdha_cfg.two_category
-        else if sdha_cfg.category == 7:
+        elif sdha_cfg.category == 7:
             self._classes = sdha_cfg.seven_category
         else:
             pass

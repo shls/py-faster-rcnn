@@ -184,9 +184,9 @@ __C.PIXEL_MEANS = np.array([[[102.9801, 115.9465, 122.7717]]])
 
 if sdha_cfg.channels == 3:
     pass
-else if sdha_cfg.channels == 1:
+elif sdha_cfg.channels == 1:
     __C.PIXEL_MEANS = np.array([[[113.8994]]])  
-else if sdha_cfg.channels == 4:
+elif sdha_cfg.channels == 4:
     __C.PIXEL_MEANS = np.array([[[113.8994,113.8994,113.8994,113.8994]]])
 else:
     pass

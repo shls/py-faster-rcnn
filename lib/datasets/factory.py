@@ -36,7 +36,7 @@ from datasets.sdha import sdha
 sdha_devkit_path = ''
 if sdha_cfg.device_name == 'GTX780':
     sdha_devkit_path = sdha_cfg.GTX780_root
-else if sdha_cfg.device_name == 'GTX980':
+elif sdha_cfg.device_name == 'GTX980':
     sdha_devkit_path = sdha_cfg.GTX980_root
 else:
     pass
