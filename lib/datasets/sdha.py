@@ -127,7 +127,7 @@ class sdha(imdb):
         """
         Load image and bounding boxes info from txt files of INRIAPerson.
         """
-        filename = os.path.join(self._data_path, 'Annotations', sdha_cfg.category, self._image_set, index + '.txt')
+        filename = os.path.join(self._data_path, 'Annotations', str(sdha_cfg.category), self._image_set, index + '.txt')
         # print 'Loading: {}'.format(filename)
         with open(filename) as f:
             data = f.read()

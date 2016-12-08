@@ -87,7 +87,7 @@ def _get_image_blob(im):
         im_scale = float(cfg.TEST.MAX_SIZE) / float(im_size_max)
     im = cv2.resize(im_orig, None, None, fx=im_scale, fy=im_scale,
                     interpolation=cv2.INTER_LINEAR)
-    if len(im.shape) !=3:
+    if im.ndim != 3:
         im = np.expand_dims(im, axis=2)
     im_info = np.hstack((im.shape[:2], im_scale))[np.newaxis, :]
     processed_ims.append(im)
@@ -121,6 +121,8 @@ def imdb_proposals(net, imdb):
         #im = cv2.imread(imdb.image_path_at(i))
 		#Multi channel supported
         im = np.load(imdb.image_path_at(i))
+        if im.ndim != 3:
+            im = np.expand_dims(im, axis=2)
         _t.tic()
         imdb_boxes[i], scores = im_proposals(net, im)
         _t.toc()

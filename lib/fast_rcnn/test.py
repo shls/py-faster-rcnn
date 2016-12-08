@@ -48,7 +48,7 @@ def _get_image_blob(im):
             im_scale = float(cfg.TEST.MAX_SIZE) / float(im_size_max)
         im = cv2.resize(im_orig, None, None, fx=im_scale, fy=im_scale,
                         interpolation=cv2.INTER_LINEAR)
-        if len(im.shape) !=3:
+        if im.ndim != 3:
             im = np.expand_dims(im, axis=2)
         im_scale_factors.append(im_scale)
         processed_ims.append(im)
@@ -286,6 +286,8 @@ def test_net(net, imdb, max_per_image=100, thresh=0.05, vis=False):
         #im = cv2.imread(imdb.image_path_at(i))
         #Multi channels supported
         im = np.load(imdb.image_path_at(i))
+        if im.ndim != 3:
+            im = np.expand_dims(im, axis=2)
         _t['im_detect'].tic()
         scores, boxes = im_detect(net, im, box_proposals)
         _t['im_detect'].toc()
