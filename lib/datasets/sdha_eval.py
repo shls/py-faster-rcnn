@@ -8,10 +8,17 @@ import xml.etree.ElementTree as ET
 import os
 import cPickle
 import numpy as np
+from datasets.sdha_cfg import sdha_cfg
 
 def parse_rec(filename):
     """ Parse a SDHA txt file """
-    classes = ('__background__', 'Hand Shaking', 'Hugging', 'Kicking', 'Pointing', 'Punching', 'Pushing')
+    classes = ('__background__')
+    if sdha_cfg.category == 2:
+        classes = sdha_cfg.two_category
+    elif sdha_cfg.category == 7:
+        classes = sdha_cfg.seven_category
+    else:
+        pass
     with open(filename) as f:
         data = f.read()
     import re
