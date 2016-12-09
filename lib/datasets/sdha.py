@@ -203,6 +203,7 @@ class sdha(imdb):
         annopath = os.path.join(
             self._data_path,
             'Annotations',
+            str(sdha_cfg.category),
             self._image_set,
             '{:s}.txt')
         imagesetfile = os.path.join(
